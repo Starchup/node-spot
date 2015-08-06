@@ -14,7 +14,10 @@
     "url": "http://github.com/Starchup/spot"
   },
   "engines": { "node": ">= 0.10" },
-  "dependencies": {},
+  "dependencies": {
+    "request-promise": "0.4.3",
+    "check-types": "3.3.1"
+  },
   "scripts": {},
   "readmeFilename": "README.md",
   "bugs": { "url": "https://github.com/Starchup/spot/issues"},
