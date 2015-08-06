@@ -1,0 +1,22 @@
+{
+  "name": "node-spot",
+  "version": "6.1.291.0",
+  "main": "./spot",
+  "description": "SPOT POS Integrator for Node JS",
+  "author": {
+    "name": "Starchup Inc",
+    "email": "geoffroy@starchup.com",
+    "url": "http://starchup.com"
+  },
+  "keywords": ["starchup"],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Starchup/spot"
+  },
+  "engines": { "node": ">= 0.10" },
+  "dependencies": {},
+  "scripts": {},
+  "readmeFilename": "README.md",
+  "bugs": { "url": "https://github.com/Starchup/spot/issues"},
+  "homepage": "https://github.com/Starchup/spot"
+}
