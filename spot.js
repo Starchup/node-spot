@@ -2,11 +2,12 @@
  * Modules from the community: package.json
  */
 var request = require('request-promise');
-var check          = require('check-types');
+var check = require('check-types');
 
 var CONFIG = {
     AccountKey: null,
     SessionId: null,
+    SecurityId: null,
     CustomerName: null,
     URL: "https://servicestest.spotpos.com/ccapi/q",
     Settings: null
@@ -25,14 +26,24 @@ var SPOT = function(config) {
   config = JSON.parse(JSON.stringify(config));
 
   CONFIG.AccountKey = config['account_key'];
+  CONFIG.SecurityID = config['security_id'];
 
   // SPOT Requires SessionId & CustomerName to be in the request even when they have no value
-  CONFIG.SessionId = config['session_id'] ? config['session_id'] : " ";
-  CONFIG.CustomerName = config['customer_name'] ? config['customer_name'] : " ";
+  if (config['session_id']) CONFIG.SessionID = config['session_id'];
+  if (config['customer_name']) CONFIG.CustomerName = config['customer_name'];
 
   CONFIG.Settings = config['settings'];
 
   if (config['production']) CONFIG.URL = " https://services.spotpos.com/ccapi/q";
+
+  Util.GetToken()
+  .then(function(result) {
+    console.log("result");
+    console.log(result);
+  }).catch(function(err) {
+    console.log("err");
+    console.log(err);
+  });
 };
 module.exports = SPOT;
 
@@ -44,17 +55,23 @@ var Request = {
 
     CreateRequest: function (requestType, body) {
 
-        var requestBody = {};
-        requestBody.RequestType = requestType;
-        requestBody.AccountKey = CONFIG.AccountKey;
-        requestBody.SessionID = CONFIG.SessionId;
-        requestBody.Body = Util.base64._encode(JSON.stringify(body));
+        var requestBody = '{"RequestType":"' + requestType + '","AccountKey":"' + CONFIG.AccountKey + '","SecurityID":"' + CONFIG.SecurityID + '","Body":"' + Util.base64._encode(JSON.stringify(body)) + '","UserAgent":"' + "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36" + '"}';
+
+        // var requestBody = {};
+        // requestBody.RequestType = requestType;
+        // requestBody.AccountKey = CONFIG.AccountKey;
+        // requestBody.SecurityID = CONFIG.SecurityID;
+
+        // if (CONFIG.SessionID) requestBody.SessionID = CONFIG.SessionID;
+        // if (body) requestBody.Body = Util.base64._encode(JSON.stringify(body));
 
         var options = {
             uri : CONFIG.URL,
             method : 'POST',
-            body: JSON.stringify(requestBody)
+            body: requestBody//JSON.stringify(requestBody)
         };
+
+        console.log(options);
 
         return request(options);
     }
@@ -361,14 +378,20 @@ var User = {
             {
                 result = JSON.parse(JSON.stringify(result));
 
-                Config.SessionId = result.ReturnObject.SessionID;
-                Config.CustomerName = result.ReturnObject.CustomerName;
+                if (!result.ReturnObject || result.ReturnObject.SessionID || !result.ReturnObject.CustomerName)
+                {
+                  console.log(result);
+
+                  var err = new Error('Could not login');
+                  err.code = 490;
+                  throw err;
+                }
+
+                CONFIG.SessionID = result.ReturnObject.SessionID;
+                CONFIG.CustomerName = result.ReturnObject.CustomerName;
 
                 resolve(result);
             });
-        }).catch(function(error)
-        {
-            return new Promise(function(resolve, reject) { reject(error); });
         });
     },
 
@@ -431,6 +454,9 @@ var User = {
 
 // Util functions
 var Util = {
+    GetToken: function () {
+        return new Request.CreateRequest('GetToken', null);
+    },
     // Private - Encode Base64.
     base64: {
         _PADCHAR: "=",
