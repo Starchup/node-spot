@@ -19,12 +19,10 @@ var CONFIG = {
  */
 var SPOT = function(config) {
 
-  if (!check.object(config)) {
-    config = {};
-  }
+  if (!check.object(config)) { config = {}; }
 
   config = JSON.parse(JSON.stringify(config));
-
+  
   CONFIG.AccountKey = config['account_key'];
   CONFIG.SecurityID = config['security_id'];
 
@@ -32,18 +30,21 @@ var SPOT = function(config) {
   if (config['session_id']) CONFIG.SessionID = config['session_id'];
   if (config['customer_name']) CONFIG.CustomerName = config['customer_name'];
 
-  CONFIG.Settings = config['settings'];
-
+  if (config['settings']) CONFIG.Settings = config['settings'];
   if (config['production']) CONFIG.URL = " https://services.spotpos.com/ccapi/q";
 
-  Util.GetToken()
-  .then(function(result) {
-    console.log("result");
-    console.log(result);
-  }).catch(function(err) {
-    console.log("err");
-    console.log(err);
-  });
+  // Once you're ready to go, login the store
+  Util.GetToken().then(function(result)
+  {
+    result = JSON.parse(result);
+
+    try {
+        CONFIG.SessionID = result.ReturnObject.SessionID;
+    } catch (e) {
+        console.log("Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID)
+    }
+
+  }).catch(console.log);
 };
 module.exports = SPOT;
 
@@ -55,23 +56,19 @@ var Request = {
 
     CreateRequest: function (requestType, body) {
 
-        var requestBody = '{"RequestType":"' + requestType + '","AccountKey":"' + CONFIG.AccountKey + '","SecurityID":"' + CONFIG.SecurityID + '","Body":"' + Util.base64._encode(JSON.stringify(body)) + '","UserAgent":"' + "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36" + '"}';
+        var requestBody = {};
+        requestBody.RequestType = requestType;
+        requestBody.AccountKey = CONFIG.AccountKey;
+        requestBody.SecurityID = CONFIG.SecurityID;
 
-        // var requestBody = {};
-        // requestBody.RequestType = requestType;
-        // requestBody.AccountKey = CONFIG.AccountKey;
-        // requestBody.SecurityID = CONFIG.SecurityID;
-
-        // if (CONFIG.SessionID) requestBody.SessionID = CONFIG.SessionID;
-        // if (body) requestBody.Body = Util.base64._encode(JSON.stringify(body));
+        if (CONFIG.SessionID) requestBody.SessionID = CONFIG.SessionID;
+        if (body) requestBody.Body = Util.base64._encode(JSON.stringify(body));
 
         var options = {
             uri : CONFIG.URL,
             method : 'POST',
-            body: requestBody//JSON.stringify(requestBody)
+            body: JSON.stringify(requestBody)
         };
-
-        console.log(options);
 
         return request(options);
     }
