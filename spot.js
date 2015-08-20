@@ -11,7 +11,7 @@ var CONFIG = {
     CustomerName: null,
     URL: "https://servicestest.spotpos.com/ccapi/q",
     Settings: null
-}
+};
 
 
 /**
@@ -23,15 +23,15 @@ var SPOT = function(config) {
 
   config = JSON.parse(JSON.stringify(config));
   
-  CONFIG.AccountKey = config['account_key'];
-  CONFIG.SecurityID = config['security_id'];
+  CONFIG.AccountKey = config.account_key;
+  CONFIG.SecurityID = config.security_id;
 
   // SPOT Requires SessionId & CustomerName to be in the request even when they have no value
-  if (config['session_id']) CONFIG.SessionID = config['session_id'];
-  if (config['customer_name']) CONFIG.CustomerName = config['customer_name'];
+  if (config.session_id) CONFIG.SessionID = config.session_id;
+  if (config.customer_name) CONFIG.CustomerName = config.customer_name;
 
-  if (config['settings']) CONFIG.Settings = config['settings'];
-  if (config['production']) CONFIG.URL = " https://services.spotpos.com/ccapi/q";
+  if (config.settings) CONFIG.Settings = config.settings;
+  if (config.production) CONFIG.URL = " https://services.spotpos.com/ccapi/q";
 
   // Once you're ready to go, login the store
   Util.GetToken().then(function(result)
@@ -41,7 +41,7 @@ var SPOT = function(config) {
     try {
         CONFIG.SessionID = result.ReturnObject.SessionID;
     } catch (e) {
-        console.log("Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID)
+        console.log("Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID);
     }
 
   }).catch(console.log);
@@ -209,7 +209,7 @@ var Customer = {
 
     // Public - Save Customer Info
     SaveCustomer: function (clientInfo) {
-        if (clientInfo.clientAccountID == '') {
+        if (clientInfo.clientAccountID === '') {
             return new Request.CreateRequest('Signup', clientInfo);
         }
         else {
@@ -546,7 +546,7 @@ var Util = {
                 ca = parseInt(s.charAt(len), 10) * mul;
                 sum += ca - (ca > 9) * 9;
                 mul ^= 3;
-            };
+            }
             return (sum % 10 === 0) && (sum > 0);
         },
 
@@ -605,7 +605,7 @@ var Util = {
 
         Phone10: function (s) {
             var p = (s + '').replace(/[^\d]/g, '');
-            return /^[\d]{10}$/.test(p)
+            return /^[\d]{10}$/.test(p);
         }
     }
 };
