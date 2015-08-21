@@ -32,20 +32,8 @@ var SPOT = function(config) {
 
   if (config.settings) CONFIG.Settings = config.settings;
   if (config.production) CONFIG.URL = " https://services.spotpos.com/ccapi/q";
-
-  // Once you're ready to go, login the store
-  Util.GetToken().then(function(result)
-  {
-    result = JSON.parse(result);
-
-    try {
-        CONFIG.SessionID = result.ReturnObject.SessionID;
-    } catch (e) {
-        console.log("Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID);
-    }
-
-  }).catch(console.log);
 };
+
 module.exports = SPOT;
 
 /**
@@ -60,6 +48,8 @@ var Request = {
         requestBody.RequestType = requestType;
         requestBody.AccountKey = CONFIG.AccountKey;
         requestBody.SecurityID = CONFIG.SecurityID;
+
+        console.log(CONFIG);
 
         if (CONFIG.SessionID) requestBody.SessionID = CONFIG.SessionID;
         if (body) requestBody.Body = Util.base64._encode(JSON.stringify(body));
@@ -209,6 +199,8 @@ var Customer = {
 
     // Public - Save Customer Info
     SaveCustomer: function (clientInfo) {
+        console.log("SaveCustomer");
+
         if (clientInfo.clientAccountID === '') {
             return new Request.CreateRequest('Signup', clientInfo);
         }
@@ -452,7 +444,19 @@ var User = {
 // Util functions
 var Util = {
     GetToken: function () {
-        return new Request.CreateRequest('GetToken', null);
+        return new Request.CreateRequest('GetToken', null)
+        .then(function(result)
+        {
+            result = JSON.parse(result);
+
+            try {
+                CONFIG.SessionID = result.ReturnObject.SessionID;
+                console.log("set session");
+            } catch (e) {
+                console.log("Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID);
+                throw e;
+            }
+        });
     },
     // Private - Encode Base64.
     base64: {
