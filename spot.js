@@ -44,12 +44,16 @@ var Request = {
 
     CreateRequest: function (requestType, body) {
 
+        // Clear out any null parameters in the body
+        for (var attr in body) {
+            if (body[attr] === null || body[attr] === undefined) delete body[attr];
+        }
+
+        // BUild main request body with configuration variables
         var requestBody = {};
         requestBody.RequestType = requestType;
         requestBody.AccountKey = CONFIG.AccountKey;
         requestBody.SecurityID = CONFIG.SecurityID;
-
-        console.log(CONFIG);
 
         if (CONFIG.SessionID) requestBody.SessionID = CONFIG.SessionID;
         if (body) requestBody.Body = Util.base64._encode(JSON.stringify(body));
@@ -199,9 +203,7 @@ var Customer = {
 
     // Public - Save Customer Info
     SaveCustomer: function (clientInfo) {
-        console.log("SaveCustomer");
-
-        if (clientInfo.clientAccountID === '') {
+        if (!clientInfo.clientAccountID || clientInfo.clientAccountID === '') {
             return new Request.CreateRequest('Signup', clientInfo);
         }
         else {
@@ -367,13 +369,11 @@ var User = {
             {
                 result = JSON.parse(JSON.stringify(result));
 
-                if (!result.ReturnObject || result.ReturnObject.SessionID || !result.ReturnObject.CustomerName)
+                if (!result.ReturnObject || !result.ReturnObject.SessionID || !result.ReturnObject.CustomerName)
                 {
-                  console.log(result);
-
-                  var err = new Error('Could not login');
-                  err.code = 490;
-                  throw err;
+                    var err = new Error('Could not login');
+                    err.code = 490;
+                    reject(err);
                 }
 
                 CONFIG.SessionID = result.ReturnObject.SessionID;
@@ -451,9 +451,8 @@ var Util = {
 
             try {
                 CONFIG.SessionID = result.ReturnObject.SessionID;
-                console.log("set session");
             } catch (e) {
-                console.log("Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID);
+                e.message = "Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID;
                 throw e;
             }
         });
