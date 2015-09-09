@@ -54,7 +54,7 @@ var Request = {
         requestBody.RequestType = requestType;
         requestBody.AccountKey = CONFIG.AccountKey;
         requestBody.SecurityID = CONFIG.SecurityID;
-
+        
         if (CONFIG.SessionID) requestBody.SessionID = CONFIG.SessionID;
         if (body) requestBody.Body = Util.base64._encode(JSON.stringify(body));
 
@@ -365,16 +365,15 @@ var User = {
         return new Request.CreateRequest('Login', new this.LoginObject(emailAddress, password))
         .then(function(result)
         {
+            result = JSON.parse(result);
+            
             return new Promise(function(resolve, reject)
             {
-                result = JSON.parse(JSON.stringify(result));
+                var err = new Error('Could not login');
+                err.code = 490;
 
-                if (!result.ReturnObject || !result.ReturnObject.SessionID || !result.ReturnObject.CustomerName)
-                {
-                    var err = new Error('Could not login');
-                    err.code = 490;
-                    reject(err);
-                }
+                if (result.Failed || !result.ReturnObject) return reject(err);
+                if (!result.ReturnObject.SessionID || !result.ReturnObject.CustomerName) return reject(err);
 
                 CONFIG.SessionID = result.ReturnObject.SessionID;
                 CONFIG.CustomerName = result.ReturnObject.CustomerName;
