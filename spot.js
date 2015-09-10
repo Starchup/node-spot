@@ -64,7 +64,19 @@ var Request = {
             body: JSON.stringify(requestBody)
         };
 
-        return request(options);
+        return request(options).then(function(result)
+        {
+            result = JSON.parse(result);
+            return new Promise(function(resolve, reject)
+            {
+                var err = new Error(result.Message);
+                err.code = 490;
+
+                if (result.Failed === true || !result.ReturnObject) return reject(err);
+
+                resolve(result.ReturnObject);
+            });
+        });
     }
 };
 
@@ -364,19 +376,16 @@ var User = {
     Login: function (emailAddress, password) {
         return new Request.CreateRequest('Login', new this.LoginObject(emailAddress, password))
         .then(function(result)
-        {
-            result = JSON.parse(result);
-            
+        {   
             return new Promise(function(resolve, reject)
             {
                 var err = new Error('Could not login');
                 err.code = 490;
 
-                if (result.Failed || !result.ReturnObject) return reject(err);
-                if (!result.ReturnObject.SessionID || !result.ReturnObject.CustomerName) return reject(err);
+                if (!result.SessionID || !result.CustomerName) return reject(err);
 
-                CONFIG.SessionID = result.ReturnObject.SessionID;
-                CONFIG.CustomerName = result.ReturnObject.CustomerName;
+                CONFIG.SessionID = result.SessionID;
+                CONFIG.CustomerName = result.CustomerName;
 
                 resolve(result);
             });
@@ -389,9 +398,7 @@ var User = {
         .then(function(result)
         {
             return new Promise(function(resolve, reject)
-            {
-                result = JSON.parse(JSON.stringify(result));
-                
+            {   
                 Config.SessionId = null;
                 Config.CustomerName = null;
 
@@ -446,10 +453,8 @@ var Util = {
         return new Request.CreateRequest('GetToken', null)
         .then(function(result)
         {
-            result = JSON.parse(result);
-
             try {
-                CONFIG.SessionID = result.ReturnObject.SessionID;
+                CONFIG.SessionID = result.SessionID;
             } catch (e) {
                 e.message = "Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID;
                 throw e;
