@@ -8,18 +8,30 @@
     "email": "geoffroy@starchup.com",
     "url": "http://starchup.com"
   },
-  "keywords": ["starchup"],
+  "keywords": [
+    "starchup"
+  ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/Starchup/spot"
+    "url": "git+ssh://git@github.com/Starchup/spot.git"
   },
-  "engines": { "node": ">= 0.10" },
+  "engines": {
+    "node": ">= 0.10"
+  },
   "dependencies": {
     "request-promise": "0.4.3",
     "check-types": "3.3.1"
   },
   "scripts": {},
   "readmeFilename": "README.md",
-  "bugs": { "url": "https://github.com/Starchup/spot/issues"},
-  "homepage": "https://github.com/Starchup/spot"
+  "bugs": {
+    "url": "https://github.com/Starchup/spot/issues"
+  },
+  "homepage": "https://github.com/Starchup/spot",
+  "gitHead": "a6c219e5c1053b87a0857cfc9387f3840fa762e2",
+  "readme": "# spot\nSPOT POS Integration\n",
+  "_id": "node-spot@0.1.3",
+  "_shasum": "42800936257222607bb5eccb66ea42c3e395ac00",
+  "_from": "git+https://github.com/Starchup/node-spot.git",
+  "_resolved": "git+https://github.com/Starchup/node-spot.git#a6c219e5c1053b87a0857cfc9387f3840fa762e2"
 }
