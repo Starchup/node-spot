@@ -1,7 +1,5 @@
 # node-spot
-=========
 SPOT POS Wrapper in NodeJS, fully promisified
-
 
 #### Initialization
 
