@@ -1,5 +1,6 @@
-# spot
-NodeJS fully promisified SPOT POS Integration Wrapper
+# node-spot
+=========
+SPOT POS Wrapper in NodeJS, fully promisified
 
 
 #### Initialization
