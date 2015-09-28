@@ -141,7 +141,7 @@ var Customer = {
     },
 
     //Private - Save customer object
-    CustomerInfo: function (clientAccountID, firstName, lastName, emailAddress, serviceType, password, accountNodeID, title, statementDestination, comments, referralSource, birthDate, routeID, clientInfo, primaryAddress1, primaryAddress2, primaryAddressCity, primaryAddressState, primaryAddressZip, deliveryAddress1, deliveryAddress2, deliveryAddressCity, deliveryAddressState, deliveryAddressZip, billingAddress1, billingAddress2, billingAddressCity, billingAddressState, billingAddressZip) {
+    CustomerInfo: function (clientAccountID, firstName, lastName, emailAddress, serviceType, password, accountNodeID, title, statementDestination, comments, referralSource, birthDate, routeID, clientInfo, phones, primaryAddress1, primaryAddress2, primaryAddressCity, primaryAddressState, primaryAddressZip, deliveryAddress1, deliveryAddress2, deliveryAddressCity, deliveryAddressState, deliveryAddressZip, billingAddress1, billingAddress2, billingAddressCity, billingAddressState, billingAddressZip) {
         this.clientAccountID = clientAccountID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -156,6 +156,7 @@ var Customer = {
         this.birthDate = birthDate;
         this.routeID = routeID;
         this.clientInfo = clientInfo;
+        this.phones = phones;
         this.primaryAddress = { Address1: primaryAddress1, Address2: primaryAddress2, City: primaryAddressCity, State: primaryAddressState, Zip: primaryAddressZip };
         this.deliveryAddress = { Address1: deliveryAddress1, Address2: deliveryAddress2, City: deliveryAddressCity, State: deliveryAddressState, Zip: deliveryAddressZip };
         this.billingAddress = { Address1: billingAddress1, Address2: billingAddress2, City: billingAddressCity, State: billingAddressState, Zip: billingAddressZip };
