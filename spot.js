@@ -72,6 +72,7 @@ var Request = {
                 var err = new Error(result.Message);
                 err.code = 490;
 
+                if (result.Failed !== true && result.Message === 'Change account request succeeded') return resolve();
                 if (result.Failed === true || !result.ReturnObject) return reject(err);
 
                 resolve(result.ReturnObject);
