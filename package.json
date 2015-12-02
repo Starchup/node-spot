@@ -19,8 +19,7 @@
     "node": ">= 0.10"
   },
   "dependencies": {
-    "request-promise": "0.4.3",
-    "check-types": "3.3.1"
+    "request-promise": "1.0.2"
   },
   "scripts": {},
   "readmeFilename": "README.md",

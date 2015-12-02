@@ -2,7 +2,6 @@
  * Modules from the community: package.json
  */
 var request = require('request-promise');
-var check = require('check-types');
 
 var CONFIG = {
     AccountKey: null,
@@ -18,8 +17,6 @@ var CONFIG = {
  * Constructor
  */
 var SPOT = function(config) {
-
-  if (!check.object(config)) { config = {}; }
 
   config = JSON.parse(JSON.stringify(config));
   

@@ -3,7 +3,7 @@ SPOT POS Wrapper in NodeJS, fully promisified
 
 #### Initialization
 
-`var SPOT = require('node-spot');`
+`var SPOT = require('node-spot');`  
 `var pos = new SPOT({ account_key: your_account_key, security_id: your_security_id, production: true });`
 
 
