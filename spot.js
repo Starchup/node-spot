@@ -18,17 +18,17 @@ var CONFIG = {
  */
 var SPOT = function(config) {
 
-  config = JSON.parse(JSON.stringify(config));
-  
-  CONFIG.AccountKey = config.account_key;
-  CONFIG.SecurityID = config.security_id;
+    config = JSON.parse(JSON.stringify(config));
 
-  // SPOT Requires SessionId & CustomerName to be in the request even when they have no value
-  if (config.session_id) CONFIG.SessionID = config.session_id;
-  if (config.customer_name) CONFIG.CustomerName = config.customer_name;
+    CONFIG.AccountKey = config.account_key;
+    CONFIG.SecurityID = config.security_id;
 
-  if (config.settings) CONFIG.Settings = config.settings;
-  if (config.production) CONFIG.URL = " https://services.spotpos.com/ccapi/q";
+    // SPOT Requires SessionId & CustomerName to be in the request even when they have no value
+    if (config.session_id) CONFIG.SessionID = config.session_id;
+    if (config.customer_name) CONFIG.CustomerName = config.customer_name;
+
+    if (config.settings) CONFIG.Settings = config.settings;
+    if (config.production) CONFIG.URL = "https://api.mydrycleaner.com/q";
 };
 
 module.exports = SPOT;
@@ -39,7 +39,7 @@ module.exports = SPOT;
 // Request Functions and Objects
 var Request = {
 
-    CreateRequest: function (requestType, body) {
+    CreateRequest: function(requestType, body) {
 
         // Clear out any null parameters in the body
         for (var attr in body) {
@@ -51,21 +51,19 @@ var Request = {
         requestBody.RequestType = requestType;
         requestBody.AccountKey = CONFIG.AccountKey;
         requestBody.SecurityID = CONFIG.SecurityID;
-        
+
         if (CONFIG.SessionID) requestBody.SessionID = CONFIG.SessionID;
         if (body) requestBody.Body = Util.base64._encode(JSON.stringify(body));
 
         var options = {
-            uri : CONFIG.URL,
-            method : 'POST',
+            uri: CONFIG.URL,
+            method: 'POST',
             body: JSON.stringify(requestBody)
         };
 
-        return request(options).then(function(result)
-        {
+        return request(options).then(function(result) {
             result = JSON.parse(result);
-            return new Promise(function(resolve, reject)
-            {
+            return new Promise(function(resolve, reject) {
                 var err = new Error(result.Message);
                 err.code = 490;
 
@@ -81,12 +79,12 @@ var Request = {
 // AR Functions and Objects
 var AR = {
     //Private - ARStatement ID
-    ARStatement: function (statementId) {
+    ARStatement: function(statementId) {
         this.statementId = statementId;
     },
 
     //Private - ARPayment for Insert
-    ARPayment: function (cardOnFileId, cardNo, cardExp, addCardToAccount, amount) {
+    ARPayment: function(cardOnFileId, cardNo, cardExp, addCardToAccount, amount) {
         this.cardOnFileId = cardOnFileId;
         this.cardNo = cardNo;
         this.cardExp = cardExp;
@@ -95,38 +93,38 @@ var AR = {
     },
 
     //Public - Retrieve current AR Balance
-    GetARBalance: function () {
+    GetARBalance: function() {
         return new Request.CreateRequest('ARBalance', null);
     },
 
     //Public - Retrieve current AR activity
-    GetARCurrentActivity: function () {
+    GetARCurrentActivity: function() {
         return new Request.CreateRequest('ARCurrentActivity', null);
     },
 
     //Public - Retrieve detailed list of payments.
-    GetPaymentDetails: function () {
+    GetPaymentDetails: function() {
         return new Request.CreateRequest('ARPaymentsDetail', null);
     },
 
     //Public - Retrieve information about a single statement.
-    GetStatementDetails: function (statementId) {
+    GetStatementDetails: function(statementId) {
         return new Request.CreateRequest('ARStatementDetail', new this.ARStatement(statementId));
     },
 
     //Public - Retrieve list of statements with summary information
-    GetStatementsList: function () {
+    GetStatementsList: function() {
         return new Request.CreateRequest('ARStatementsList', null);
     },
 
-    SavePayment: function (cardOnFileId, cardNo, cardExp, addCardToAccount, amount) {
+    SavePayment: function(cardOnFileId, cardNo, cardExp, addCardToAccount, amount) {
         return new Request.CreateRequest('SavePayment', new this.ARPayment(cardOnFileId, cardNo, cardExp, addCardToAccount, amount));
     }
 };
 
 // Customer functions and objects
 var Customer = {
-    AddressObject: function (address1, address2, city, state, zip) {
+    AddressObject: function(address1, address2, city, state, zip) {
         this.address1 = address1;
         this.address2 = address2;
         this.city = city;
@@ -134,12 +132,12 @@ var Customer = {
         this.zip = zip;
     },
 
-    Award: function (awardId) {
+    Award: function(awardId) {
         this.id = awardId;
     },
 
     //Private - Save customer object
-    CustomerInfo: function (clientAccountID, firstName, lastName, emailAddress, serviceType, password, accountNodeID, title, statementDestination, comments, referralSource, birthDate, routeID, clientInfo, primaryAddress1, primaryAddress2, primaryAddressCity, primaryAddressState, primaryAddressZip, deliveryAddress1, deliveryAddress2, deliveryAddressCity, deliveryAddressState, deliveryAddressZip, billingAddress1, billingAddress2, billingAddressCity, billingAddressState, billingAddressZip, phones) {
+    CustomerInfo: function(clientAccountID, firstName, lastName, emailAddress, serviceType, password, accountNodeID, title, statementDestination, comments, referralSource, birthDate, routeID, clientInfo, primaryAddress1, primaryAddress2, primaryAddressCity, primaryAddressState, primaryAddressZip, deliveryAddress1, deliveryAddress2, deliveryAddressCity, deliveryAddressState, deliveryAddressZip, billingAddress1, billingAddress2, billingAddressCity, billingAddressState, billingAddressZip, phones) {
         this.clientAccountID = clientAccountID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -161,87 +159,86 @@ var Customer = {
     },
 
     // Private GiftCard Object
-    GiftCardNumber: function (giftCardNumber) {
+    GiftCardNumber: function(giftCardNumber) {
         this.number = giftCardNumber;
     },
 
     // Private Notification Object
-    Notification: function (notificationTypeName, notificationMethodName, notificationValue) {
+    Notification: function(notificationTypeName, notificationMethodName, notificationValue) {
         this.notificationTypeName = notificationTypeName;
         this.notificationMethodName = notificationMethodName;
         this.notificationValue = notificationValue;
     },
 
-    ConvertToDelivery: function (routeId) {
+    ConvertToDelivery: function(routeId) {
         return new Request.CreateRequest('ConvertToDelivery', routeId);
     },
 
     // Public - Get Customer Info
-    GetCustomer: function () {
+    GetCustomer: function() {
         return new Request.CreateRequest('CustomerDetail', null);
     },
 
     // Public - Apply Award Code
-    IssueAward: function (awardId) {
+    IssueAward: function(awardId) {
         return new Request.CreateRequest('IssueAward', new this.Award(awardId));
     },
 
     // Public - Send Notification of Pickup to Store
-    NotifyPickup: function (storeId, timeRequested) {
+    NotifyPickup: function(storeId, timeRequested) {
         return new Request.CreateRequest('NotifyPickup', new this.PickupNotification(storeId, timeRequested));
     },
 
     // Private - Notify Pickup Object
-    PickupNotification: function (storeId, timeRequested) {
+    PickupNotification: function(storeId, timeRequested) {
         this.storeId = SPAccountNodeID;
         this.timeRequested = TimeRequested;
     },
 
     // Public - Redeem Gift Card
-    RedeemGiftCard: function (giftCardNumber) {
+    RedeemGiftCard: function(giftCardNumber) {
         return new Request.CreateRequest('GiftCardRedeem', new this.GiftCardNumber(giftCardNumber));
     },
 
     // Public - Retrieve Gift Card Balance
-    RetrieveGiftCardBalance: function (giftCardNumber) {
+    RetrieveGiftCardBalance: function(giftCardNumber) {
         return new Request.CreateRequest('GiftCardBalance', new this.GiftCardNumber(giftCardNumber));
     },
 
     // Public - Retrieve Gift Cards
-    RetrieveGiftCards: function () {
+    RetrieveGiftCards: function() {
         return new Request.CreateRequest('RetrieveGiftCards', null);
     },
 
     // Public - Save Customer Info
-    SaveCustomer: function (clientInfo) {
+    SaveCustomer: function(clientInfo) {
         if (!clientInfo.clientAccountID || clientInfo.clientAccountID === '') {
             return new Request.CreateRequest('Signup', clientInfo);
-        }
-        else {
+        } else {
             return new Request.CreateRequest('SaveCustomer', clientInfo);
         }
     },
 
     // Public - Unsubscribe / Enable
-    SaveNotification: function (notifications) {
+    SaveNotification: function(notifications) {
         return new Request.CreateRequest('Unsubscribe', notifications);
     },
 
     // Public - Unsubscribe / Enable
-    SaveNotificationNoUser: function (notifications) {
+    SaveNotificationNoUser: function(notifications) {
         return new Request.CreateRequest('UnsubscribeNoUser', notifications);
     },
 
     // Public - Unsubscribe All / Enable All
-    SaveNotificationAll: function (notification) {
+    SaveNotificationAll: function(notification) {
         return new Request.CreateRequest('UnsubscribeAll', notification);
     },
 
     // Public - Unsubscribe All / Enable All
-    SaveNotificationAllNoUser: function (notification) {
+    SaveNotificationAllNoUser: function(notification) {
         return new Request.CreateRequest('UnsubscribeAllNoUser', notification);
     },
-    SendEmail: function (email) {
+    SendEmail: function(email) {
         return new Request.CreateRequest('SendEmail', email);
     }
 };
@@ -249,45 +246,45 @@ var Customer = {
 //Invoice Functions and Objects
 var Invoice = {
     //Private - InvoiceID
-    Invoice: function (invoiceId) {
+    Invoice: function(invoiceId) {
         this.invoiceId = invoiceId;
     },
 
-    InvoicesList: function (filterTypeId, startDate, endDate) {
+    InvoicesList: function(filterTypeId, startDate, endDate) {
         this.filterTypeId = filterTypeId;
         this.startDate = startDate;
         this.endDate = endDate;
     },
 
-    InvoicesListGarment: function (garmentDesc, descriptor) {
+    InvoicesListGarment: function(garmentDesc, descriptor) {
         this.garmentDesc = garmentDesc;
         this.descriptor = descriptor;
     },
 
     //Public - Retrieve Invoice Info
-    GetInvoiceDetails: function (invoiceId) {
+    GetInvoiceDetails: function(invoiceId) {
         return new Request.CreateRequest('InvoiceDetail', new this.Invoice(invoiceId));
     },
 
-    GetInvoiceList: function (filterTypeId, startDate, endDate) {
+    GetInvoiceList: function(filterTypeId, startDate, endDate) {
         return new Request.CreateRequest('InvoicesList', new this.InvoicesList(filterTypeId, startDate, endDate));
     },
 
-    GetInvoiceListGarment: function (garmentDesc, descriptor) {
+    GetInvoiceListGarment: function(garmentDesc, descriptor) {
         return new Request.CreateRequest('InvoicesByGarment', new this.InvoicesListGarment(garmentDesc, descriptor));
     }
 };
 
 // Route Pickup/Cancellation Functions and Objects
 var Route = {
-    CancellationRequest: function (fromDate, toDate, comments, instructionsRequest) {
+    CancellationRequest: function(fromDate, toDate, comments, instructionsRequest) {
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.comments = comments;
         this.instructionsRequest = instructionsRequest;
     },
 
-    PickupRequest: function (accountTransactionNumber, pickupDate, comments, instructionsRequest, deliveryType, visitType, deliveryDate) {
+    PickupRequest: function(accountTransactionNumber, pickupDate, comments, instructionsRequest, deliveryType, visitType, deliveryDate) {
         this.accountTransactionNumber = accountTransactionNumber;
         this.comments = comments;
         this.instructionsRequest = instructionsRequest;
@@ -297,45 +294,45 @@ var Route = {
         this.deliveryDate = deliveryDate;
     },
 
-    GetRouteDeliveryZones: function () {
+    GetRouteDeliveryZones: function() {
         return new Request.CreateRequest('GetDeliveryZones', null);
     },
 
-    PendingCancellations: function () {
+    PendingCancellations: function() {
         return new Request.CreateRequest('PendingCancellations', null);
     },
 
-    PendingPickups: function () {
+    PendingPickups: function() {
         return new Request.CreateRequest('PendingPickups', null);
     },
 
-    SaveCancellationRequest: function (cancellationRequest) {
+    SaveCancellationRequest: function(cancellationRequest) {
         return new Request.CreateRequest('CancellationRequest', cancellationRequest);
     },
 
-    SavePickupRequest: function (pickupRequest) {
+    SavePickupRequest: function(pickupRequest) {
         return new Request.CreateRequest('PickupRequest', pickupRequest);
     }
 };
 
 // Settings
 var Settings = {
-    GetNotifications: function () {
+    GetNotifications: function() {
         return new Request.CreateRequest('GetNotifications', null);
     },
 
-    GetPreferences: function () {
+    GetPreferences: function() {
         return new Request.CreateRequest('GetPreferences', null);
     },
 
-    GetSettings: function () {
+    GetSettings: function() {
         return new Request.CreateRequest('GetSettings', null);
     }
 };
 
 // Store functions and objects
 var Store = {
-    GetStoreList: function () {
+    GetStoreList: function() {
         return new Request.CreateRequest('StoreList', null);
     }
 };
@@ -344,83 +341,78 @@ var Store = {
 var User = {
 
     // Private - Message To Manager object.
-    MessageToManager: function (subject, message, invoiceid) {
+    MessageToManager: function(subject, message, invoiceid) {
         this.subject = subject;
         this.message = message;
         this.invoiceid = invoiceid;
     },
 
     // Public - Change Password for logged in user.
-    ChangePassword: function (newPassword) {
+    ChangePassword: function(newPassword) {
         return new Request.CreateRequest('ChangePassword', newPassword);
     },
 
     // Public - Send Message To Manager
-    SendMessage: function (subject, body, invoiceid) {
+    SendMessage: function(subject, body, invoiceid) {
         return new Request.CreateRequest('MessageToManagerNoUser', new this.MessageToManager(subject, body, null));
     },
 
     // Public - Send Message To Manager
-    SendMessageUser: function (subject, body, invoiceid) {
+    SendMessageUser: function(subject, body, invoiceid) {
         return new Request.CreateRequest('MessageToManagerUser', new this.MessageToManager(subject, body, invoiceid));
     },
 
     // Private - Login Object
-    LoginObject: function (emailAddress, password) {
+    LoginObject: function(emailAddress, password) {
         this.user = emailAddress;
         this.password = password;
     },
 
     // Public - Initiate Login
-    Login: function (emailAddress, password) {
+    Login: function(emailAddress, password) {
         return new Request.CreateRequest('Login', new this.LoginObject(emailAddress, password))
-        .then(function(result)
-        {   
-            return new Promise(function(resolve, reject)
-            {
-                var err = new Error('Could not login');
-                err.code = 490;
+            .then(function(result) {
+                return new Promise(function(resolve, reject) {
+                    var err = new Error('Could not login');
+                    err.code = 490;
 
-                if (!result.SessionID || !result.CustomerName) return reject(err);
+                    if (!result.SessionID || !result.CustomerName) return reject(err);
 
-                CONFIG.SessionID = result.SessionID;
-                CONFIG.CustomerName = result.CustomerName;
+                    CONFIG.SessionID = result.SessionID;
+                    CONFIG.CustomerName = result.CustomerName;
 
-                resolve(result);
+                    resolve(result);
+                });
             });
-        });
     },
 
     // Public  - Intiate Logout Request
-    Logout: function () {
+    Logout: function() {
         return new Request.CreateRequest('Logoff', null)
-        .then(function(result)
-        {
-            return new Promise(function(resolve, reject)
-            {   
-                Config.SessionId = null;
-                Config.CustomerName = null;
+            .then(function(result) {
+                return new Promise(function(resolve, reject) {
+                    Config.SessionId = null;
+                    Config.CustomerName = null;
 
-                resolve(result);
+                    resolve(result);
+                });
+            }).catch(function(error) {
+                return new Promise(function(resolve, reject) { reject(error); });
             });
-        }).catch(function(error)
-        {
-            return new Promise(function(resolve, reject) { reject(error); });
-        });
     },
 
     // Public - Request password reminder
-    PasswordReminder: function (requestInfo) {
+    PasswordReminder: function(requestInfo) {
         return new Request.CreateRequest('RememberPasswordRequest', requestInfo);
     },
 
     // Public - Request password reminder
-    FinishPasswordReminder: function (requestInfo) {
+    FinishPasswordReminder: function(requestInfo) {
         return new Request.CreateRequest('RememberPasswordFinish', requestInfo);
     },
 
     // Private - Insert Event Object
-    InsertEventRequest: function (productName, customerID, eventStartDateTime, eventSource, eventEndDateTime) {
+    InsertEventRequest: function(productName, customerID, eventStartDateTime, eventSource, eventEndDateTime) {
         this.productName = productName;
         this.customerID = customerID;
         this.eventStartDateTime = eventStartDateTime;
@@ -429,36 +421,35 @@ var User = {
     },
 
     // Public - Insert a tracking event
-    InsertEvent: function (requestInfo) {
+    InsertEvent: function(requestInfo) {
         return new Request.CreateRequest('InsertEvent', requestInfo);
     },
 
     // Public - Update Event Object
-    UpdateEventRequest: function (instanceID, customerID, eventEndDateTime) {
+    UpdateEventRequest: function(instanceID, customerID, eventEndDateTime) {
         this.instanceID = instanceID;
         this.customerID = customerID;
         this.eventEndDateTime = eventEndDateTime;
     },
 
     // Public - Update a tracking event
-    UpdateEvent: function (requestInfo) {
+    UpdateEvent: function(requestInfo) {
         return new Request.CreateRequest('UpdateEvent', requestInfo);
     }
 };
 
 // Util functions
 var Util = {
-    GetToken: function () {
+    GetToken: function() {
         return new Request.CreateRequest('GetToken', null)
-        .then(function(result)
-        {
-            try {
-                CONFIG.SessionID = result.SessionID;
-            } catch (e) {
-                e.message = "Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID;
-                throw e;
-            }
-        });
+            .then(function(result) {
+                try {
+                    CONFIG.SessionID = result.SessionID;
+                } catch (e) {
+                    e.message = "Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID;
+                    throw e;
+                }
+            });
     },
     // Private - Encode Base64.
     base64: {
@@ -466,7 +457,7 @@ var Util = {
         _ALPHA: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
         _VERSION: "1.0",
 
-        _getbyte64: function (s, i) {
+        _getbyte64: function(s, i) {
             var idx = this._ALPHA.indexOf(s.charAt(i));
             if (idx === -1) {
                 throw "Cannot decode base64";
@@ -474,8 +465,9 @@ var Util = {
             return idx;
         },
 
-        _decode: function (s) {
-            var pads = 0, i, b10,
+        _decode: function(s) {
+            var pads = 0,
+                i, b10,
                 imax = s.length,
                 x = [];
             s = String(s);
@@ -497,13 +489,19 @@ var Util = {
                 x.push(String.fromCharCode(b10 >> 16, (b10 >> 8) & 255, b10 & 255));
             }
             switch (pads) {
-                case 1: b10 = (this._getbyte64(s, i) << 18) | (this._getbyte64(s, i + 1) << 12) | (this._getbyte64(s, i + 2) << 6); x.push(String.fromCharCode(b10 >> 16, (b10 >> 8) & 255)); break;
-                case 2: b10 = (this._getbyte64(s, i) << 18) | (this._getbyte64(s, i + 1) << 12); x.push(String.fromCharCode(b10 >> 16)); break;
+                case 1:
+                    b10 = (this._getbyte64(s, i) << 18) | (this._getbyte64(s, i + 1) << 12) | (this._getbyte64(s, i + 2) << 6);
+                    x.push(String.fromCharCode(b10 >> 16, (b10 >> 8) & 255));
+                    break;
+                case 2:
+                    b10 = (this._getbyte64(s, i) << 18) | (this._getbyte64(s, i + 1) << 12);
+                    x.push(String.fromCharCode(b10 >> 16));
+                    break;
             }
             return x.join("");
         },
 
-        _getbyte: function (s, i) {
+        _getbyte: function(s, i) {
             var x = s.charCodeAt(i);
             if (x > 255) {
                 throw "INVALID_CHARACTER_ERR: DOM Exception 5";
@@ -511,12 +509,13 @@ var Util = {
             return x;
         },
 
-        _encode: function (s) {
+        _encode: function(s) {
             if (arguments.length !== 1) {
                 throw "SyntaxError: exactly one argument required";
             }
             s = String(s);
-            var i, b10, x = [], imax = s.length - s.length % 3;
+            var i, b10, x = [],
+                imax = s.length - s.length % 3;
             if (s.length === 0) {
                 return s;
             }
@@ -528,15 +527,21 @@ var Util = {
                 x.push(this._ALPHA.charAt(b10 & 63));
             }
             switch (s.length - imax) {
-                case 1: b10 = this._getbyte(s, i) << 16; x.push(this._ALPHA.charAt(b10 >> 18) + this._ALPHA.charAt((b10 >> 12) & 63) + this._PADCHAR + this._PADCHAR); break;
-                case 2: b10 = (this._getbyte(s, i) << 16) | (this._getbyte(s, i + 1) << 8); x.push(this._ALPHA.charAt(b10 >> 18) + this._ALPHA.charAt((b10 >> 12) & 63) + this._ALPHA.charAt((b10 >> 6) & 63) + this._PADCHAR); break;
+                case 1:
+                    b10 = this._getbyte(s, i) << 16;
+                    x.push(this._ALPHA.charAt(b10 >> 18) + this._ALPHA.charAt((b10 >> 12) & 63) + this._PADCHAR + this._PADCHAR);
+                    break;
+                case 2:
+                    b10 = (this._getbyte(s, i) << 16) | (this._getbyte(s, i + 1) << 8);
+                    x.push(this._ALPHA.charAt(b10 >> 18) + this._ALPHA.charAt((b10 >> 12) & 63) + this._ALPHA.charAt((b10 >> 6) & 63) + this._PADCHAR);
+                    break;
             }
             return x.join("");
         }
     },
 
     Validate: {
-        CCExpiration: function (s) {
+        CCExpiration: function(s) {
             if (/^[0-9]{2}[//][0-9]{2}$/.test(s)) {
                 if (new Date().getFullYear() < Number(s.split('/')[1]) + 2000) {
                     return true;
@@ -545,8 +550,9 @@ var Util = {
             return false;
         },
 
-        CCNumber: function (s) {
-            var ca, sum = 0, mul = 1;
+        CCNumber: function(s) {
+            var ca, sum = 0,
+                mul = 1;
             var len = s.length;
             while (len--) {
                 ca = parseInt(s.charAt(len), 10) * mul;
@@ -556,7 +562,7 @@ var Util = {
             return (sum % 10 === 0) && (sum > 0);
         },
 
-        CCType: function (s) {
+        CCType: function(s) {
             if (typeof Config.Settings.CCTypesSupported == 'undefined') {
                 return false;
             }
@@ -568,11 +574,11 @@ var Util = {
             return Util.Validate.CCNumber(s);
         },
 
-        EmailAddress: function (s) {
+        EmailAddress: function(s) {
             return /^[A-Za-z0-9.]+@[A-Za-z0-9]+\.[A-Za-z]{2,4}/.test(s);
         },
 
-        GetCCType: function (s) {
+        GetCCType: function(s) {
             var cc = (s + '').replace(/\s/g, ''); //remove space
 
             if ((/^(34|37)/).test(cc) && cc.length == 15) {
@@ -586,9 +592,9 @@ var Util = {
             } else if ((/^(6011)/).test(cc) && cc.length == 16) {
                 return 'DISC'; //Discover begins with 6011, and length is 16.
             } else if ((/^(3)/).test(cc) && cc.length == 16) {
-                return 'JCB';  //JCB begins with 3, and length is 16.
+                return 'JCB'; //JCB begins with 3, and length is 16.
             } else if ((/^(2131|1800)/).test(cc) && cc.length == 15) {
-                return 'JCB';  //JCB begins with 2131 or 1800, and length is 15.
+                return 'JCB'; //JCB begins with 2131 or 1800, and length is 15.
             } else if ((/^(300|301|302|303|304|305|36|38)/).test(cc) && cc.length == 14) {
                 return 'CART'; //Cart Blanche begins with 300-305 or 36 or 38 and length of 14.
             } else if ((/^(6334|6767)/).test(cc) && (cc.length == 16 || cc.length == 18 || cc.length == 19)) {
@@ -601,7 +607,7 @@ var Util = {
             return 'UNKN'; //unknown type
         },
 
-        Password: function (s) {
+        Password: function(s) {
             if (!/^.{6,30}$/.test(s) || !/[A-Z]/.test(s) || !/[0-9]/.test(s)) {
                 return false;
             } else {
@@ -609,7 +615,7 @@ var Util = {
             }
         },
 
-        Phone10: function (s) {
+        Phone10: function(s) {
             var p = (s + '').replace(/[^\d]/g, '');
             return /^[\d]{10}$/.test(p);
         }
