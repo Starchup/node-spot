@@ -9,7 +9,11 @@ var CONFIG = {
     SecurityId: null,
     CustomerName: null,
     URL: "https://servicestest.spotpos.com/ccapi/q",
-    Settings: null
+    Settings: null,
+    UserAgent: "Backend Integration",
+    headers: {
+        'Content-type': 'application/json'
+    }
 };
 
 
@@ -51,11 +55,13 @@ var Request = {
         requestBody.RequestType = requestType;
         requestBody.AccountKey = CONFIG.AccountKey;
         requestBody.SecurityID = CONFIG.SecurityID;
+        requestBody.UserAgent = CONFIG.UserAgent;
 
         if (CONFIG.SessionID) requestBody.SessionID = CONFIG.SessionID;
         if (body) requestBody.Body = Util.base64._encode(JSON.stringify(body));
 
         var options = {
+            headers: CONFIG.headers,
             uri: CONFIG.URL,
             method: 'POST',
             body: JSON.stringify(requestBody)
@@ -152,9 +158,27 @@ var Customer = {
         this.birthDate = birthDate;
         this.routeID = routeID;
         this.clientInfo = clientInfo;
-        this.primaryAddress = { Address1: primaryAddress1, Address2: primaryAddress2, City: primaryAddressCity, State: primaryAddressState, Zip: primaryAddressZip };
-        this.deliveryAddress = { Address1: deliveryAddress1, Address2: deliveryAddress2, City: deliveryAddressCity, State: deliveryAddressState, Zip: deliveryAddressZip };
-        this.billingAddress = { Address1: billingAddress1, Address2: billingAddress2, City: billingAddressCity, State: billingAddressState, Zip: billingAddressZip };
+        this.primaryAddress = {
+            Address1: primaryAddress1,
+            Address2: primaryAddress2,
+            City: primaryAddressCity,
+            State: primaryAddressState,
+            Zip: primaryAddressZip
+        };
+        this.deliveryAddress = {
+            Address1: deliveryAddress1,
+            Address2: deliveryAddress2,
+            City: deliveryAddressCity,
+            State: deliveryAddressState,
+            Zip: deliveryAddressZip
+        };
+        this.billingAddress = {
+            Address1: billingAddress1,
+            Address2: billingAddress2,
+            City: billingAddressCity,
+            State: billingAddressState,
+            Zip: billingAddressZip
+        };
         this.phones = phones;
     },
 
@@ -397,7 +421,9 @@ var User = {
                     resolve(result);
                 });
             }).catch(function(error) {
-                return new Promise(function(resolve, reject) { reject(error); });
+                return new Promise(function(resolve, reject) {
+                    reject(error);
+                });
             });
     },
 
