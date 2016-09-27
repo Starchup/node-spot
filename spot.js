@@ -44,7 +44,6 @@ module.exports = SPOT;
 var Request = {
 
     CreateRequest: function(requestType, body) {
-
         // Clear out any null parameters in the body
         for (var attr in body) {
             if (body[attr] === null || body[attr] === undefined) delete body[attr];
@@ -69,7 +68,7 @@ var Request = {
 
         return request(options).then(function(result) {
             result = JSON.parse(result);
-            var err = new Error(result.Message);
+            var err = Error(result.Message);
             err.code = 490;
 
             if (result.Failed !== true && result.Message === 'Change account request succeeded') return;
@@ -98,31 +97,31 @@ var AR = {
 
     //Public - Retrieve current AR Balance
     GetARBalance: function() {
-        return new Request.CreateRequest('ARBalance', null);
+        return Request.CreateRequest('ARBalance', null);
     },
 
     //Public - Retrieve current AR activity
     GetARCurrentActivity: function() {
-        return new Request.CreateRequest('ARCurrentActivity', null);
+        return Request.CreateRequest('ARCurrentActivity', null);
     },
 
     //Public - Retrieve detailed list of payments.
     GetPaymentDetails: function() {
-        return new Request.CreateRequest('ARPaymentsDetail', null);
+        return Request.CreateRequest('ARPaymentsDetail', null);
     },
 
     //Public - Retrieve information about a single statement.
     GetStatementDetails: function(statementId) {
-        return new Request.CreateRequest('ARStatementDetail', new this.ARStatement(statementId));
+        return Request.CreateRequest('ARStatementDetail', this.ARStatement(statementId));
     },
 
     //Public - Retrieve list of statements with summary information
     GetStatementsList: function() {
-        return new Request.CreateRequest('ARStatementsList', null);
+        return Request.CreateRequest('ARStatementsList', null);
     },
 
     SavePayment: function(cardOnFileId, cardNo, cardExp, addCardToAccount, amount) {
-        return new Request.CreateRequest('SavePayment', new this.ARPayment(cardOnFileId, cardNo, cardExp, addCardToAccount, amount));
+        return Request.CreateRequest('SavePayment', this.ARPayment(cardOnFileId, cardNo, cardExp, addCardToAccount, amount));
     }
 };
 
@@ -193,22 +192,22 @@ var Customer = {
     },
 
     ConvertToDelivery: function(routeId) {
-        return new Request.CreateRequest('ConvertToDelivery', routeId);
+        return Request.CreateRequest('ConvertToDelivery', routeId);
     },
 
     // Public - Get Customer Info
     GetCustomer: function() {
-        return new Request.CreateRequest('CustomerDetail', null);
+        return Request.CreateRequest('CustomerDetail', null);
     },
 
     // Public - Apply Award Code
     IssueAward: function(awardId) {
-        return new Request.CreateRequest('IssueAward', new this.Award(awardId));
+        return Request.CreateRequest('IssueAward', this.Award(awardId));
     },
 
     // Public - Send Notification of Pickup to Store
     NotifyPickup: function(storeId, timeRequested) {
-        return new Request.CreateRequest('NotifyPickup', new this.PickupNotification(storeId, timeRequested));
+        return Request.CreateRequest('NotifyPickup', this.PickupNotification(storeId, timeRequested));
     },
 
     // Private - Notify Pickup Object
@@ -219,49 +218,49 @@ var Customer = {
 
     // Public - Redeem Gift Card
     RedeemGiftCard: function(giftCardNumber) {
-        return new Request.CreateRequest('GiftCardRedeem', new this.GiftCardNumber(giftCardNumber));
+        return Request.CreateRequest('GiftCardRedeem', this.GiftCardNumber(giftCardNumber));
     },
 
     // Public - Retrieve Gift Card Balance
     RetrieveGiftCardBalance: function(giftCardNumber) {
-        return new Request.CreateRequest('GiftCardBalance', new this.GiftCardNumber(giftCardNumber));
+        return Request.CreateRequest('GiftCardBalance', this.GiftCardNumber(giftCardNumber));
     },
 
     // Public - Retrieve Gift Cards
     RetrieveGiftCards: function() {
-        return new Request.CreateRequest('RetrieveGiftCards', null);
+        return Request.CreateRequest('RetrieveGiftCards', null);
     },
 
     // Public - Save Customer Info
     SaveCustomer: function(clientInfo) {
         if (!clientInfo.clientAccountID || clientInfo.clientAccountID === '') {
-            return new Request.CreateRequest('Signup', clientInfo);
+            return Request.CreateRequest('Signup', clientInfo);
         } else {
-            return new Request.CreateRequest('SaveCustomer', clientInfo);
+            return Request.CreateRequest('SaveCustomer', clientInfo);
         }
     },
 
     // Public - Unsubscribe / Enable
     SaveNotification: function(notifications) {
-        return new Request.CreateRequest('Unsubscribe', notifications);
+        return Request.CreateRequest('Unsubscribe', notifications);
     },
 
     // Public - Unsubscribe / Enable
     SaveNotificationNoUser: function(notifications) {
-        return new Request.CreateRequest('UnsubscribeNoUser', notifications);
+        return Request.CreateRequest('UnsubscribeNoUser', notifications);
     },
 
     // Public - Unsubscribe All / Enable All
     SaveNotificationAll: function(notification) {
-        return new Request.CreateRequest('UnsubscribeAll', notification);
+        return Request.CreateRequest('UnsubscribeAll', notification);
     },
 
     // Public - Unsubscribe All / Enable All
     SaveNotificationAllNoUser: function(notification) {
-        return new Request.CreateRequest('UnsubscribeAllNoUser', notification);
+        return Request.CreateRequest('UnsubscribeAllNoUser', notification);
     },
     SendEmail: function(email) {
-        return new Request.CreateRequest('SendEmail', email);
+        return Request.CreateRequest('SendEmail', email);
     }
 };
 
@@ -285,15 +284,15 @@ var Invoice = {
 
     //Public - Retrieve Invoice Info
     GetInvoiceDetails: function(invoiceId) {
-        return new Request.CreateRequest('InvoiceDetail', new this.Invoice(invoiceId));
+        return Request.CreateRequest('InvoiceDetail', this.Invoice(invoiceId));
     },
 
     GetInvoiceList: function(filterTypeId, startDate, endDate) {
-        return new Request.CreateRequest('InvoicesList', new this.InvoicesList(filterTypeId, startDate, endDate));
+        return Request.CreateRequest('InvoicesList', this.InvoicesList(filterTypeId, startDate, endDate));
     },
 
     GetInvoiceListGarment: function(garmentDesc, descriptor) {
-        return new Request.CreateRequest('InvoicesByGarment', new this.InvoicesListGarment(garmentDesc, descriptor));
+        return Request.CreateRequest('InvoicesByGarment', this.InvoicesListGarment(garmentDesc, descriptor));
     }
 };
 
@@ -317,45 +316,45 @@ var Route = {
     },
 
     GetRouteDeliveryZones: function() {
-        return new Request.CreateRequest('GetDeliveryZones', null);
+        return Request.CreateRequest('GetDeliveryZones', null);
     },
 
     PendingCancellations: function() {
-        return new Request.CreateRequest('PendingCancellations', null);
+        return Request.CreateRequest('PendingCancellations', null);
     },
 
     PendingPickups: function() {
-        return new Request.CreateRequest('PendingPickups', null);
+        return Request.CreateRequest('PendingPickups', null);
     },
 
     SaveCancellationRequest: function(cancellationRequest) {
-        return new Request.CreateRequest('CancellationRequest', cancellationRequest);
+        return Request.CreateRequest('CancellationRequest', cancellationRequest);
     },
 
     SavePickupRequest: function(pickupRequest) {
-        return new Request.CreateRequest('PickupRequest', pickupRequest);
+        return Request.CreateRequest('PickupRequest', pickupRequest);
     }
 };
 
 // Settings
 var Settings = {
     GetNotifications: function() {
-        return new Request.CreateRequest('GetNotifications', null);
+        return Request.CreateRequest('GetNotifications', null);
     },
 
     GetPreferences: function() {
-        return new Request.CreateRequest('GetPreferences', null);
+        return Request.CreateRequest('GetPreferences', null);
     },
 
     GetSettings: function() {
-        return new Request.CreateRequest('GetSettings', null);
+        return Request.CreateRequest('GetSettings', null);
     }
 };
 
 // Store functions and objects
 var Store = {
     GetStoreList: function() {
-        return new Request.CreateRequest('StoreList', null);
+        return Request.CreateRequest('StoreList', null);
     }
 };
 
@@ -371,17 +370,17 @@ var User = {
 
     // Public - Change Password for logged in user.
     ChangePassword: function(newPassword) {
-        return new Request.CreateRequest('ChangePassword', newPassword);
+        return Request.CreateRequest('ChangePassword', newPassword);
     },
 
     // Public - Send Message To Manager
     SendMessage: function(subject, body, invoiceid) {
-        return new Request.CreateRequest('MessageToManagerNoUser', new this.MessageToManager(subject, body, null));
+        return Request.CreateRequest('MessageToManagerNoUser', this.MessageToManager(subject, body, null));
     },
 
     // Public - Send Message To Manager
     SendMessageUser: function(subject, body, invoiceid) {
-        return new Request.CreateRequest('MessageToManagerUser', new this.MessageToManager(subject, body, invoiceid));
+        return Request.CreateRequest('MessageToManagerUser', this.MessageToManager(subject, body, invoiceid));
     },
 
     // Private - Login Object
@@ -392,11 +391,11 @@ var User = {
 
     // Public - Initiate Login
     Login: function(emailAddress, password) {
-
-        return new this.Logout().then(function() {
-            return new Request.CreateRequest('Login', new this.LoginObject(emailAddress, password));
+        var self = this;
+        return self.Logout().then(function() {
+            return Request.CreateRequest('Login', new self.LoginObject(emailAddress, password));
         }).then(function(result) {
-            var err = new Error('Could not login');
+            var err = Error('Could not login');
             err.code = 490;
             if (!result.SessionID || !result.CustomerName) return Promise.reject(err);
 
@@ -409,21 +408,23 @@ var User = {
 
     // Public  - Intiate Logout Request
     Logout: function() {
-        return new Request.CreateRequest('Logoff', null).then(function(result) {
-            Config.SessionId = null;
-            Config.CustomerName = null;
-            return new Util.GetToken();
+        return Request.CreateRequest('Logoff', null).catch(function(err) {
+            return Promise.resolve();
+        }).finally(function() {
+            CONFIG.SessionId = null;
+            CONFIG.CustomerName = null;
+            return Util.GetToken();
         });
     },
 
     // Public - Request password reminder
     PasswordReminder: function(requestInfo) {
-        return new Request.CreateRequest('RememberPasswordRequest', requestInfo);
+        return Request.CreateRequest('RememberPasswordRequest', requestInfo);
     },
 
     // Public - Request password reminder
     FinishPasswordReminder: function(requestInfo) {
-        return new Request.CreateRequest('RememberPasswordFinish', requestInfo);
+        return Request.CreateRequest('RememberPasswordFinish', requestInfo);
     },
 
     // Private - Insert Event Object
@@ -437,7 +438,7 @@ var User = {
 
     // Public - Insert a tracking event
     InsertEvent: function(requestInfo) {
-        return new Request.CreateRequest('InsertEvent', requestInfo);
+        return Request.CreateRequest('InsertEvent', requestInfo);
     },
 
     // Public - Update Event Object
@@ -449,22 +450,21 @@ var User = {
 
     // Public - Update a tracking event
     UpdateEvent: function(requestInfo) {
-        return new Request.CreateRequest('UpdateEvent', requestInfo);
+        return Request.CreateRequest('UpdateEvent', requestInfo);
     }
 };
 
 // Util functions
 var Util = {
     GetToken: function() {
-        return new Request.CreateRequest('GetToken', null)
-            .then(function(result) {
-                try {
-                    CONFIG.SessionID = result.SessionID;
-                } catch (e) {
-                    e.message = "Could not setup SPOT with AccountKey: " + CONFIG.AccountKey + " and SecurityID: " + CONFIG.SecurityID;
-                    throw e;
-                }
-            });
+        return Request.CreateRequest('GetToken', null).then(function(result) {
+            try {
+                CONFIG.SessionID = result.SessionID;
+            } catch (e) {
+                e.message = "Could not setup SPOT with AccountKey: " + CONFIG.AccountKey + " and SecurityID: " + CONFIG.SecurityID;
+                throw e;
+            }
+        });
     },
     // Private - Encode Base64.
     base64: {
@@ -558,7 +558,7 @@ var Util = {
     Validate: {
         CCExpiration: function(s) {
             if (/^[0-9]{2}[//][0-9]{2}$/.test(s)) {
-                if (new Date().getFullYear() < Number(s.split('/')[1]) + 2000) {
+                if (Date().getFullYear() < Number(s.split('/')[1]) + 2000) {
                     return true;
                 }
             }
@@ -578,11 +578,11 @@ var Util = {
         },
 
         CCType: function(s) {
-            if (typeof Config.Settings.CCTypesSupported == 'undefined') {
+            if (typeof CONFIG.Settings.CCTypesSupported == 'undefined') {
                 return false;
             }
 
-            if (Config.Settings.CCTypesSupported.search(Util.Validate.GetCCType(s)) == -1) {
+            if (CONFIG.Settings.CCTypesSupported.search(Util.Validate.GetCCType(s)) == -1) {
                 return false;
             }
 
