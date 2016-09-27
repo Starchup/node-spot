@@ -69,15 +69,13 @@ var Request = {
 
         return request(options).then(function(result) {
             result = JSON.parse(result);
-            return new Promise(function(resolve, reject) {
-                var err = new Error(result.Message);
-                err.code = 490;
+            var err = new Error(result.Message);
+            err.code = 490;
 
-                if (result.Failed !== true && result.Message === 'Change account request succeeded') return resolve();
-                if (result.Failed === true || !result.ReturnObject) return reject(err);
+            if (result.Failed !== true && result.Message === 'Change account request succeeded') return;
+            if (result.Failed === true || !result.ReturnObject) return Promise.reject(err);
 
-                resolve(result.ReturnObject);
-            });
+            return result.ReturnObject;
         });
     }
 };
@@ -394,37 +392,28 @@ var User = {
 
     // Public - Initiate Login
     Login: function(emailAddress, password) {
-        return new Request.CreateRequest('Login', new this.LoginObject(emailAddress, password))
-            .then(function(result) {
-                return new Promise(function(resolve, reject) {
-                    var err = new Error('Could not login');
-                    err.code = 490;
 
-                    if (!result.SessionID || !result.CustomerName) return reject(err);
+        return new this.Logout().then(function() {
+            return new Request.CreateRequest('Login', new this.LoginObject(emailAddress, password));
+        }).then(function(result) {
+            var err = new Error('Could not login');
+            err.code = 490;
+            if (!result.SessionID || !result.CustomerName) return Promise.reject(err);
 
-                    CONFIG.SessionID = result.SessionID;
-                    CONFIG.CustomerName = result.CustomerName;
+            CONFIG.SessionID = result.SessionID;
+            CONFIG.CustomerName = result.CustomerName;
 
-                    resolve(result);
-                });
-            });
+            return result;
+        });
     },
 
     // Public  - Intiate Logout Request
     Logout: function() {
-        return new Request.CreateRequest('Logoff', null)
-            .then(function(result) {
-                return new Promise(function(resolve, reject) {
-                    Config.SessionId = null;
-                    Config.CustomerName = null;
-
-                    resolve(result);
-                });
-            }).catch(function(error) {
-                return new Promise(function(resolve, reject) {
-                    reject(error);
-                });
-            });
+        return new Request.CreateRequest('Logoff', null).then(function(result) {
+            Config.SessionId = null;
+            Config.CustomerName = null;
+            return new Util.GetToken();
+        });
     },
 
     // Public - Request password reminder
@@ -472,7 +461,7 @@ var Util = {
                 try {
                     CONFIG.SessionID = result.SessionID;
                 } catch (e) {
-                    e.message = "Could not setup SPOT with AccountKey: %s and SecurityID: %s", CONFIG.AccountKey, CONFIG.SecurityID;
+                    e.message = "Could not setup SPOT with AccountKey: " + CONFIG.AccountKey + " and SecurityID: " + CONFIG.SecurityID;
                     throw e;
                 }
             });
