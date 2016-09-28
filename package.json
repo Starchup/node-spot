@@ -1,6 +1,6 @@
 {
     "name": "node-spot",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "main": "./spot",
     "description": "SPOT POS Integrator for Node JS",
     "author": {

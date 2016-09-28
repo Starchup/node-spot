@@ -112,7 +112,7 @@ var AR = {
 
     //Public - Retrieve information about a single statement.
     GetStatementDetails: function(statementId) {
-        return Request.CreateRequest('ARStatementDetail', this.ARStatement(statementId));
+        return Request.CreateRequest('ARStatementDetail', new this.ARStatement(statementId));
     },
 
     //Public - Retrieve list of statements with summary information
@@ -121,7 +121,7 @@ var AR = {
     },
 
     SavePayment: function(cardOnFileId, cardNo, cardExp, addCardToAccount, amount) {
-        return Request.CreateRequest('SavePayment', this.ARPayment(cardOnFileId, cardNo, cardExp, addCardToAccount, amount));
+        return Request.CreateRequest('SavePayment', new this.ARPayment(cardOnFileId, cardNo, cardExp, addCardToAccount, amount));
     }
 };
 
@@ -202,12 +202,12 @@ var Customer = {
 
     // Public - Apply Award Code
     IssueAward: function(awardId) {
-        return Request.CreateRequest('IssueAward', this.Award(awardId));
+        return Request.CreateRequest('IssueAward', new this.Award(awardId));
     },
 
     // Public - Send Notification of Pickup to Store
     NotifyPickup: function(storeId, timeRequested) {
-        return Request.CreateRequest('NotifyPickup', this.PickupNotification(storeId, timeRequested));
+        return Request.CreateRequest('NotifyPickup', new this.PickupNotification(storeId, timeRequested));
     },
 
     // Private - Notify Pickup Object
@@ -218,12 +218,12 @@ var Customer = {
 
     // Public - Redeem Gift Card
     RedeemGiftCard: function(giftCardNumber) {
-        return Request.CreateRequest('GiftCardRedeem', this.GiftCardNumber(giftCardNumber));
+        return Request.CreateRequest('GiftCardRedeem', new this.GiftCardNumber(giftCardNumber));
     },
 
     // Public - Retrieve Gift Card Balance
     RetrieveGiftCardBalance: function(giftCardNumber) {
-        return Request.CreateRequest('GiftCardBalance', this.GiftCardNumber(giftCardNumber));
+        return Request.CreateRequest('GiftCardBalance', new this.GiftCardNumber(giftCardNumber));
     },
 
     // Public - Retrieve Gift Cards
@@ -284,15 +284,15 @@ var Invoice = {
 
     //Public - Retrieve Invoice Info
     GetInvoiceDetails: function(invoiceId) {
-        return Request.CreateRequest('InvoiceDetail', this.Invoice(invoiceId));
+        return Request.CreateRequest('InvoiceDetail', new this.Invoice(invoiceId));
     },
 
     GetInvoiceList: function(filterTypeId, startDate, endDate) {
-        return Request.CreateRequest('InvoicesList', this.InvoicesList(filterTypeId, startDate, endDate));
+        return Request.CreateRequest('InvoicesList', new this.InvoicesList(filterTypeId, startDate, endDate));
     },
 
     GetInvoiceListGarment: function(garmentDesc, descriptor) {
-        return Request.CreateRequest('InvoicesByGarment', this.InvoicesListGarment(garmentDesc, descriptor));
+        return Request.CreateRequest('InvoicesByGarment', new this.InvoicesListGarment(garmentDesc, descriptor));
     }
 };
 
@@ -375,12 +375,12 @@ var User = {
 
     // Public - Send Message To Manager
     SendMessage: function(subject, body, invoiceid) {
-        return Request.CreateRequest('MessageToManagerNoUser', this.MessageToManager(subject, body, null));
+        return Request.CreateRequest('MessageToManagerNoUser', new this.MessageToManager(subject, body, null));
     },
 
     // Public - Send Message To Manager
     SendMessageUser: function(subject, body, invoiceid) {
-        return Request.CreateRequest('MessageToManagerUser', this.MessageToManager(subject, body, invoiceid));
+        return Request.CreateRequest('MessageToManagerUser', new this.MessageToManager(subject, body, invoiceid));
     },
 
     // Private - Login Object
